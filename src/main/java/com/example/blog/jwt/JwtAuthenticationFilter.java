@@ -1,6 +1,7 @@
 package com.example.blog.jwt;
 
 import com.example.blog.service.UserDetailService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +22,6 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserDetailService userDetailService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -32,15 +32,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = jwtTokenProvider.resolveToken(request);
 
         if (token != null && jwtTokenProvider.validateToken(token)) {
-            String username = jwtTokenProvider.getUsername(token);
-            UserDetails userDetails = userDetailService.loadUserByUsername(username);
 
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities()
-            );
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            Authentication authentication = jwtTokenProvider.getAuthentication(token);
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
         }
-
         filterChain.doFilter(request, response);
     }
 }

@@ -1,6 +1,6 @@
 package com.example.blog.controller;
 
-import com.example.blog.dto.LoginRequestDto;
+import com.example.blog.dto.request.LoginRequest;
 import com.example.blog.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,14 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/jwt")
 @RequiredArgsConstructor
-public class LoginController {
+public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto request) {
-        System.out.println("\nLoginController-login()\n");
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         //사용자 인증 시도
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -35,5 +34,12 @@ public class LoginController {
 
         //토큰 반환
         return ResponseEntity.ok(token);
+    }
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout() {
+        //클라이언트에서 토큰 삭제 필요
+        return ResponseEntity.ok("로그아웃 완료");
     }
 }

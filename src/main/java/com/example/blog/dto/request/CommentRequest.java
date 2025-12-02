@@ -1,4 +1,4 @@
-package com.example.blog.dto;
+package com.example.blog.dto.request;
 
 import lombok.Getter;
 import org.springframework.stereotype.Service;

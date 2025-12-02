@@ -1,16 +1,13 @@
 package com.example.blog.controller;
 
 import com.example.blog.domain.Comment;
-import com.example.blog.domain.User;
-import com.example.blog.dto.CommentResponse;
 import com.example.blog.dto.request.AddCommentRequest;
-import com.example.blog.repository.UserRepository;
+import com.example.blog.dto.response.CommentResponse;
 import com.example.blog.service.CommentService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,10 +21,9 @@ public class CommentController {
     @PostMapping("/api/comments")
     public ResponseEntity<CommentResponse> addComment(
             @RequestBody AddCommentRequest request,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal String username
     ) {
-        String email = userDetails.getUsername();
-        Comment savedComment = commentService.save(request, email);
+        Comment savedComment = commentService.save(request, username);
         return ResponseEntity.status(HttpStatus.CREATED).body(CommentResponse.from(savedComment));
 //        return ResponseEntity.created(URI.create("/api/articles/" + articleId)).build();
     }
@@ -46,9 +42,9 @@ public class CommentController {
     public ResponseEntity<CommentResponse> deleteComment(
             @PathVariable Long articleId,
             @PathVariable Long commentId,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal String username
     ) {
-        commentService.deleteComment(commentId, userDetails.getUsername());
+        commentService.deleteComment(commentId, username);
 
         return ResponseEntity.ok().build();
     }

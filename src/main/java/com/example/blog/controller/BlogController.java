@@ -1,16 +1,14 @@
 package com.example.blog.controller;
 
 import com.example.blog.domain.Article;
-import com.example.blog.domain.User;
-import com.example.blog.dto.ArticleResponse;
 import com.example.blog.dto.request.AddArticleRequest;
 import com.example.blog.dto.request.UpdateArticleRequest;
+import com.example.blog.dto.response.ArticleResponse;
 import com.example.blog.repository.UserRepository;
 import com.example.blog.service.BlogService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,28 +17,25 @@ import java.util.List;
 @RestController
 public class BlogController {
     private BlogService blogService;
-    private UserRepository userRepository;
 
-    public BlogController(BlogService blogService, UserRepository userRepository) {
+    public BlogController(BlogService blogService) {
         this.blogService = blogService;
-        this.userRepository = userRepository;
     }
 
     //글 저장
     @PostMapping("/api/articles")
     public ResponseEntity<Article> addArticle(
             @RequestBody AddArticleRequest request,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal String username
     ) {
-        Article savedArticle = blogService.save(request, userDetails.getUsername());
+        Article savedArticle = blogService.save(request, username);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(savedArticle);
     }
 
     //전체 글 조회
     @GetMapping("/api/articles")
-    public ResponseEntity<List<ArticleResponse>> findAllArticles(@AuthenticationPrincipal UserDetails user) {
-        System.out.println("\nBlogController-전체글조회()\n");
+    public ResponseEntity<List<ArticleResponse>> findAllArticles(@AuthenticationPrincipal String username) {
         List<ArticleResponse> list = blogService.findAll()
                 .stream().map(ArticleResponse::new)
                 .toList();
@@ -68,9 +63,9 @@ public class BlogController {
     @DeleteMapping("/api/articles/{id}")
     public ResponseEntity<Void> deleteArticles(
             @PathVariable("id") Long id,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal String username
     ) {
-        blogService.delete(id, userDetails.getUsername());
+        blogService.delete(id, username);
         return ResponseEntity.ok().build();
     }
 
@@ -80,9 +75,9 @@ public class BlogController {
     public ResponseEntity<ArticleResponse> updateArticle(
             @PathVariable("id") Long id,
             @RequestBody UpdateArticleRequest request,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal String username
             ) {
-        Article updatedArticle = blogService.update(id, request, userDetails.getUsername());
+        Article updatedArticle = blogService.update(id, request, username);
         return ResponseEntity.ok(new ArticleResponse(updatedArticle));
     }
 }

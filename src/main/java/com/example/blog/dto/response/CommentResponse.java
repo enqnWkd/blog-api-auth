@@ -1,4 +1,4 @@
-package com.example.blog.dto;
+package com.example.blog.dto.response;
 
 import com.example.blog.domain.Comment;
 import lombok.Getter;

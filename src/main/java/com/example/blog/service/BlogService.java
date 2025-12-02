@@ -2,9 +2,9 @@ package com.example.blog.service;
 
 import com.example.blog.domain.Article;
 import com.example.blog.domain.User;
-import com.example.blog.dto.ArticleResponse;
 import com.example.blog.dto.request.AddArticleRequest;
 import com.example.blog.dto.request.UpdateArticleRequest;
+import com.example.blog.dto.response.ArticleResponse;
 import com.example.blog.exception.ArticleNotFoundException;
 import com.example.blog.exception.UnauthorizedAccessException;
 import com.example.blog.repository.BlogRepository;
