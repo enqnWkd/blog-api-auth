@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class CustomExceptionHandler {
 
     @ExceptionHandler(ArticleNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(ArticleNotFoundException e) {
+    public ResponseEntity<ApiErrorResponse> handleNotFound(ArticleNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(404, e.getMessage()));
+                .body(new ApiErrorResponse(404, "ARTICLE_NOT_FOUND", e.getMessage()));
     }
 
     @ExceptionHandler(UnauthorizedAccessException.class)
-    public ResponseEntity<ErrorResponse> handleUnauthorized(UnauthorizedAccessException e) {
+    public ResponseEntity<ApiErrorResponse> handleUnauthorized(UnauthorizedAccessException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(new ErrorResponse(403, e.getMessage()));
+                .body(new ApiErrorResponse(403, "ACCESS_DENIED", e.getMessage()));
     }
 }

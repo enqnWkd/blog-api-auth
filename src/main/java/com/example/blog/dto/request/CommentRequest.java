@@ -7,6 +7,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class CommentRequest {
     private Long articleId;
-    private String author;
+    private String email;
     private String content;
 }

@@ -9,8 +9,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -21,7 +19,7 @@ import java.util.List;
 public class JwtTokenProvider {
 
     private final String SECRET_KEY = "thisIsMySuperSuperLongJwtSecretKeyForAlgorithmHS256!!!"; // 실제로는 환경변수로 관리해야 함
-    private final long EXPIRATION_TIME = 1000L * 60 * 60; // 1시간
+    private final long EXPIRATION_TIME = 1000L * 30; // 1시간
 
     private final SecretKey key;
 
@@ -31,20 +29,20 @@ public class JwtTokenProvider {
 
     // 토큰 생성
     public String createToken(Authentication authentication) {
-        String username = authentication.getName();
+        String email = authentication.getName();
         List<String> roles = authentication.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
-//        Claims claims = Jwts.claims().subject(username).build();
+//        Claims claims = Jwts.claims().subject(email).build();
 //        claims.put("roles", roles);
 
         Date now = new Date();
         Date expiry = new Date(now.getTime() + EXPIRATION_TIME);
 
         return Jwts.builder()
-                .subject(username)
+                .subject(email)
                 .claim("roles", roles)
                 .issuedAt(now)
                 .expiration(expiry)
@@ -53,16 +51,12 @@ public class JwtTokenProvider {
     }
 
     //토큰 유효성 검증
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parser()
-                    .verifyWith(key)
-                    .build()
-                    .parseSignedClaims(token);
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
+    public void validateToken(String token) {
+
+        Jwts.parser()
+            .verifyWith(key)
+            .build()
+            .parseSignedClaims(token);
     }
 
     //요청 헤더에서 토큰 추출
@@ -78,7 +72,7 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
 
-        String username = claims.getSubject();
+        String email = claims.getSubject();
         List<String> roles = claims.get("roles", List.class);
 
         List<GrantedAuthority> authorities = roles.stream()
@@ -86,7 +80,7 @@ public class JwtTokenProvider {
                 .toList();
 
         return new UsernamePasswordAuthenticationToken(
-                username, null, authorities
+                email, null, authorities
         );
     }
 

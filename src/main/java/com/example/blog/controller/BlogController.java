@@ -26,16 +26,16 @@ public class BlogController {
     @PostMapping("/api/articles")
     public ResponseEntity<Article> addArticle(
             @RequestBody AddArticleRequest request,
-            @AuthenticationPrincipal String username
+            @AuthenticationPrincipal String email
     ) {
-        Article savedArticle = blogService.save(request, username);
+        Article savedArticle = blogService.save(request, email);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(savedArticle);
     }
 
     //전체 글 조회
     @GetMapping("/api/articles")
-    public ResponseEntity<List<ArticleResponse>> findAllArticles(@AuthenticationPrincipal String username) {
+    public ResponseEntity<List<ArticleResponse>> findAllArticles(@AuthenticationPrincipal String email) {
         List<ArticleResponse> list = blogService.findAll()
                 .stream().map(ArticleResponse::new)
                 .toList();
@@ -63,9 +63,9 @@ public class BlogController {
     @DeleteMapping("/api/articles/{id}")
     public ResponseEntity<Void> deleteArticles(
             @PathVariable("id") Long id,
-            @AuthenticationPrincipal String username
+            @AuthenticationPrincipal String email
     ) {
-        blogService.delete(id, username);
+        blogService.delete(id, email);
         return ResponseEntity.ok().build();
     }
 
@@ -75,9 +75,9 @@ public class BlogController {
     public ResponseEntity<ArticleResponse> updateArticle(
             @PathVariable("id") Long id,
             @RequestBody UpdateArticleRequest request,
-            @AuthenticationPrincipal String username
+            @AuthenticationPrincipal String email
             ) {
-        Article updatedArticle = blogService.update(id, request, username);
+        Article updatedArticle = blogService.update(id, request, email);
         return ResponseEntity.ok(new ArticleResponse(updatedArticle));
     }
 }

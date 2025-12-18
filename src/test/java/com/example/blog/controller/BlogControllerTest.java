@@ -4,6 +4,7 @@ import com.example.blog.domain.Article;
 import com.example.blog.domain.User;
 import com.example.blog.domain.UserRole;
 import com.example.blog.dto.request.AddArticleRequest;
+import com.example.blog.dto.request.UpdateArticleRequest;
 import com.example.blog.exception.ArticleNotFoundException;
 import com.example.blog.repository.BlogRepository;
 import com.example.blog.repository.UserRepository;

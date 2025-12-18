@@ -1,6 +1,10 @@
 package com.example.blog.config;
 
+import com.example.blog.exception.CustomAccessDeniedHandler;
+import com.example.blog.exception.CustomAuthEntryPoint;
 import com.example.blog.jwt.JwtAuthenticationFilter;
+import com.example.blog.jwt.JwtExceptionFilter;
+import com.example.blog.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,13 +22,32 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class JwtSecurityConfig {
 
-    private final JwtAuthenticationFilter jwtFilter;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtTokenProvider);
+    }
+
+    @Bean
+    public JwtExceptionFilter jwtExceptionFilter() {
+        return new JwtExceptionFilter();
+    }
+
+    @Bean
+    public CustomAuthEntryPoint customAuthEntryPoint() {
+        return new CustomAuthEntryPoint();
+    }
+
+    @Bean
+    public CustomAccessDeniedHandler customAccessDeniedHandler() {
+        return new CustomAccessDeniedHandler();
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
 
     @Bean
     public SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
@@ -33,11 +56,18 @@ public class JwtSecurityConfig {
 //                .securityMatcher("/api/jwt/**") //이하 경로에만 jwt 설정을 적용
                 .csrf(csrf -> csrf.disable()) //
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(customAuthEntryPoint()) //401
+                        .accessDeniedHandler(customAccessDeniedHandler()) //403
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/jwt/login").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/jwt/login", "/api/jwt/signup").permitAll()
                         .anyRequest().authenticated()
-                );
+                )
+                .addFilterBefore(jwtExceptionFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

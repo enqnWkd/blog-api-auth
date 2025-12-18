@@ -21,9 +21,9 @@ public class CommentController {
     @PostMapping("/api/comments")
     public ResponseEntity<CommentResponse> addComment(
             @RequestBody AddCommentRequest request,
-            @AuthenticationPrincipal String username
+            @AuthenticationPrincipal String email
     ) {
-        Comment savedComment = commentService.save(request, username);
+        Comment savedComment = commentService.save(request, email);
         return ResponseEntity.status(HttpStatus.CREATED).body(CommentResponse.from(savedComment));
 //        return ResponseEntity.created(URI.create("/api/articles/" + articleId)).build();
     }
@@ -42,9 +42,9 @@ public class CommentController {
     public ResponseEntity<CommentResponse> deleteComment(
             @PathVariable Long articleId,
             @PathVariable Long commentId,
-            @AuthenticationPrincipal String username
+            @AuthenticationPrincipal String email
     ) {
-        commentService.deleteComment(commentId, username);
+        commentService.deleteComment(commentId, email);
 
         return ResponseEntity.ok().build();
     }

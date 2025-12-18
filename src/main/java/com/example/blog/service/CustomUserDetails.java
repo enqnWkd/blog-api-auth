@@ -2,16 +2,22 @@ package com.example.blog.service;
 
 import com.example.blog.domain.User;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
-public class UserDetailsImpl implements UserDetails {
+public class CustomUserDetails implements UserDetails {
     private final User user;
 
-    public UserDetailsImpl(User user) {
+    public CustomUserDetails(User user) {
         this.user = user;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
     }
 
     @Override
@@ -24,11 +30,8 @@ public class UserDetailsImpl implements UserDetails {
         return user.getPassword();
     }
 
-    // 기타 메서드들 기본값으로 구현
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
-    }
+    //계정 상태 관리 기능
+    //계정 만료 여부 반환 (true: 만료 안 됨)
     @Override
     public boolean isAccountNonExpired() { return true; }
     @Override
@@ -38,7 +41,4 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public boolean isEnabled() { return true; }
 
-    public User getUser() {
-        return user;
-    }
 }

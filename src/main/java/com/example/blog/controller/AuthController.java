@@ -1,7 +1,9 @@
 package com.example.blog.controller;
 
+import com.example.blog.dto.request.AddUserRequest;
 import com.example.blog.dto.request.LoginRequest;
 import com.example.blog.jwt.JwtTokenProvider;
+import com.example.blog.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,13 +21,20 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserService userService;
+
+    @PostMapping("/signup")
+    public String signup(@RequestBody AddUserRequest request) {
+        userService.save(request);
+        return "redirect:/api/jwt/login";
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         //사용자 인증 시도
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getUsername(), request.getPassword()
+                        request.getEmail(), request.getPassword()
                 )
         );
 
