@@ -1,5 +1,6 @@
 package com.example.blog.exception;
 
+import com.example.blog.jwt.AuthErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,11 +16,7 @@ public class CustomAuthEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
 
-        ApiErrorResponse body = new ApiErrorResponse(
-                401,
-                "UNAUTHORIZED",
-                "인증이 필요합니다."
-        );
+        ApiErrorResponse body = ApiErrorResponse.from(AuthErrorCode.UNAUTHORIZED);
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json; charset=UTF-8");

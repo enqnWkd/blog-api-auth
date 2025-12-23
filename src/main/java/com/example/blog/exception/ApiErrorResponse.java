@@ -1,5 +1,6 @@
 package com.example.blog.exception;
 
+import com.example.blog.jwt.AuthErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,11 +11,11 @@ public class ApiErrorResponse {
     private String error;
     private String message;
 
-    public int getStatus() {
-        return status;
-    }
-
-    public String getMessage() {
-        return message;
+    public static ApiErrorResponse from(AuthErrorCode code) {
+        return new ApiErrorResponse(
+                code.getStatus(),
+                code.getError(),
+                code.getMessage()
+        );
     }
 }

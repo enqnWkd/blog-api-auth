@@ -19,7 +19,7 @@ import java.util.List;
 public class JwtTokenProvider {
 
     private final String SECRET_KEY = "thisIsMySuperSuperLongJwtSecretKeyForAlgorithmHS256!!!"; // 실제로는 환경변수로 관리해야 함
-    private final long EXPIRATION_TIME = 1000L * 30; // 1시간
+    private final long EXPIRATION_TIME = 1000L * 60 * 60; // 1시간
 
     private final SecretKey key;
 

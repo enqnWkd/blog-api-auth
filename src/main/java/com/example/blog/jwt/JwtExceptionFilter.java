@@ -8,17 +8,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 //@Component
 public class JwtExceptionFilter extends OncePerRequestFilter {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+//    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -28,13 +25,13 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
-            setErrorResponse(response, JwtErrorCode.EXPIRED_TOKEN);
+            setErrorResponse(response, AuthErrorCode.EXPIRED_TOKEN);
         } catch (JwtException | IllegalArgumentException e) {
-            setErrorResponse(response, JwtErrorCode.INVALID_TOKEN);
+            setErrorResponse(response, AuthErrorCode.INVALID_TOKEN);
         }
     }
 
-    private void setErrorResponse(HttpServletResponse response, JwtErrorCode errorCode) throws IOException {
+    private void setErrorResponse(HttpServletResponse response, AuthErrorCode errorCode) throws IOException {
         response.setStatus(errorCode.getStatus());
         response.setContentType("application/json; charset=UTF-8");
 

@@ -35,6 +35,10 @@ public class TestUserInitializer {
 
                 blogRepository.save(new Article("제목2", "내용2", user2));
             }
+            if (userRepository.findByEmail("admin@a.com").isEmpty()) {
+                User user3 = new User("admin@a.com", passwordEncoder.encode("admin"), UserRole.ADMIN);
+                user3 = userRepository.save(user3);
+            }
         };
     }
 

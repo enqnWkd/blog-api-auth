@@ -12,10 +12,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
 @Configuration
 @EnableWebSecurity
@@ -50,6 +53,15 @@ public class JwtSecurityConfig {
     }
 
     @Bean
+    public WebSecurityCustomizer configure() {
+        // 1.스프링 시큐리티의 모든 기능 비활성화
+        return web -> web
+                .ignoring()
+                .requestMatchers(toH2Console())
+                .requestMatchers("/static/**"); //정적리소스 보안 제외
+    }
+
+    @Bean
     public SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
 
         http
@@ -61,9 +73,10 @@ public class JwtSecurityConfig {
                         .accessDeniedHandler(customAccessDeniedHandler()) //403
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/jwt/login", "/api/jwt/signup","/h2-console/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/jwt/login", "/api/jwt/signup").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/**").authenticated()
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtExceptionFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
