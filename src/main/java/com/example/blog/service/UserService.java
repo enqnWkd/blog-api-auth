@@ -4,22 +4,21 @@ import com.example.blog.domain.User;
 import com.example.blog.domain.UserRole;
 import com.example.blog.dto.request.AddUserRequest;
 import com.example.blog.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@Service
-public class UserService {
-    private UserRepository userRepository;
-    private BCryptPasswordEncoder encoder;
+import java.time.LocalDateTime;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder encoder) {
-        this.userRepository = userRepository;
-        this.encoder = encoder;
-    }
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class UserService {
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder encoder;
 
     public User save(AddUserRequest request) {
-        System.out.println("email: " + request.getEmail());
-        System.out.println("pw: " + request.getPassword());
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다: " + request.getEmail());
@@ -32,4 +31,5 @@ public class UserService {
                         .build()
         );
     }
+
 }

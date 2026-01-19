@@ -5,6 +5,7 @@ import com.example.blog.exception.CustomAuthEntryPoint;
 import com.example.blog.jwt.JwtAuthenticationFilter;
 import com.example.blog.jwt.JwtExceptionFilter;
 import com.example.blog.jwt.JwtTokenProvider;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -73,7 +74,7 @@ public class JwtSecurityConfig {
                         .accessDeniedHandler(customAccessDeniedHandler()) //403
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/jwt/login", "/api/jwt/signup","/h2-console/**").permitAll()
+                        .requestMatchers("/api/jwt/login", "/api/jwt/signup", "/api/jwt/reissue", "/h2-console/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll()

@@ -20,6 +20,10 @@ public class CustomUserDetails implements UserDetails {
         return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
     }
 
+    public User getUser() {
+        return user;
+    }
+
     @Override
     public String getUsername() {
         return user.getEmail();
